@@ -3,7 +3,7 @@ import socket
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 try:
     while True:
-        file_name = input("file path: ")
+        file_name = '.\oi.txt'
         with open(file_name, "rb") as file:
             while True:
                 dados = file.read(1024)
