@@ -5,17 +5,20 @@ serverSocket.bind(('', 4433))
 print ("Servidor Pronto")
 try:
     while True:
-        message, endereco_client = serverSocket.recvfrom(1024)
-        filename = message.decode('latin-1')
-        with open(filename, 'wb') as file:
+        arquivo, endereco_client = serverSocket.recvfrom(1024)
+        filename = arquivo.decode()
+        print(filename)
+        with open(arquivo, 'wb') as file:
             while True:
-                data, _ = serverSocket.recv(1024)
+                data = serverSocket.recv(1024)
+                print(data)
                 if not data:
                     break
                 file.write(data)
-        with open(filename, 'rb') as file:
-            for data in file:
+        with open(arquivo, 'rb') as file:
+            for data in file.readlines():
                 serverSocket.sendto(data, endereco_client)
+        serverSocket.close()
 except Exception as error:
     print("Algo deu Errado")
     print(error)
