@@ -8,7 +8,7 @@ try:
     file =  open(path, mode="rb")
     while True:
         data = file.read(1024)
-        if not data:
+        if (not data):
             break
         client.sendto(data, ('127.0.0.1', 7000))
     file.close()

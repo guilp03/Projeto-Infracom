@@ -14,7 +14,7 @@ try:
         data, client_adress  = serverSocket.recvfrom(1024)
         print(data)
         print('5555555555555555555555555555555555555555')
-        if not data:
+        if (not data):
             break
         file.write(data)
     file.close()
