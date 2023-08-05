@@ -9,26 +9,26 @@ try:
     path = './' + filename
 
     print(filename)
-    file = open(path, mode="wb")
+    testfile = open(path, mode="wb")
     while True:
         data, client_adress  = serverSocket.recvfrom(1024)
         print(data)
         print('5555555555555555555555555555555555555555')
         if (not data):
             break
-        file.write(data)
-    file.close()
+        testfile.write(data)
+    testfile.close()
 except Exception as error:
     print("Algo deu Errado")
     print(error)
     serverSocket.close()
     
-#try:
-  #  with open(arquivo, 'rb') as file:
-#        for data in file.readlines():
- #           serverSocket.sendto(data, endereco_client)
+try:
+    with open(arquivo, 'rb') as testfile:
+        for data in testfile.readlines():
+            serverSocket.sendto(data, endereco_client)
 
-#except Exception as error:
-   # print("Algo deu Errado")
-   # print(error)
-   # serverSocket.close()
+except Exception as error:
+    print("Algo deu Errado")
+    print(error)
+    serverSocket.close()
