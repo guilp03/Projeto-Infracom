@@ -20,6 +20,7 @@ try:
         while True:
             data = client.recv(1024)
             print(data)
+            client.settimeout(2)
             if (not data):
                 break
             file.write(data)
