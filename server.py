@@ -15,7 +15,7 @@ try:
     print("O arquivo recebido será: " + filename)
     # Cria uma variavel pra armazenar o caminho onde o arquivo que sera recebido esta, incluindo tambem o nome dele
     path = './' + filename
-    # Abre o arquivo com permissao de escrita binaria, apagando seu conteudo original
+    # Abre o arquivo com permissao de escrita binaria
     file = open(path, mode="wb")
     # Recebe o arquivo enquanto houver pacotes a serem recebidos
     while True:
