@@ -15,8 +15,10 @@ while True:
         try:
             client.sendto(pacote_serializado,server_adress)
             client.settimeout(0.020)
-            data, sender = client.recvfrom(1024)
-            if data.decode() == SEQ:
+            mensagem, sender = client.recvfrom(1024)
+            data = load(mensagem)
+            if data[0].decode() == SEQ:
+                print(data[1].decode())
                 if SEQ == 0:
                     SEQ = 1
                 else:
