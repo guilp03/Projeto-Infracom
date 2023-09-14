@@ -5,6 +5,7 @@ SEQ = 0
 
 server_adress = ("127.0.0.1", 4433)
 client = socket(AF_INET, SOCK_DGRAM)
+#Handshake
 while True:
     msg = input("Digite Sua Mensagem: ")
     pacote = (SEQ, msg.encode())
