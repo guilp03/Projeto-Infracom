@@ -6,40 +6,51 @@ SEQ = 0
 ACK = 1
 recebido = False
 def retransmitir_pacote(seq, msg):
-    pacote = (1,seq,msg.encode())
+    pacote = (0,seq,msg.encode())
     pacote_serializado = dumps(pacote)
     client.sendto(pacote_serializado, server_adress)
+
     return
 temporizador = threading.Timer(1.0, retransmitir_pacote, args= SEQ)
 
 server_adress = ("127.0.0.1", 4433)
 client = socket(AF_INET, SOCK_DGRAM)
 
-def Send(server_adress):
+def Send():
+    global server_adress
     global SEQ
     global ACK
     global temporizador
+    global recebido
     
     while True:
         msg = input("-> ")
-        pacote = (SEQ, msg.encode())
+        pacote = (0,SEQ, msg.encode())
         pacote_serializado = dumps(pacote)
         client.sendto(pacote_serializado, server_adress)
         temporizador = threading.Timer(1.0, retransmitir_pacote, args= (SEQ, msg))
+        temporizador.start()
         while recebido == False:
-            temporizador.start() 
-    return
-def receive():
+            continue    
+        return
+def Receive():
+    global server_adress
     global SEQ
     global ACK
     global temporizador
+    global recebido
+    
     while True:
+        client.settimeout(1.0)
         mensagem, sender = client.recvfrom(1024)
+        print("recebido")
         data = loads(mensagem)
         if data[0] == 1:
             if data[1] == SEQ:
                 temporizador.cancel()
                 recebido = True
+                if data[2].decode() != "ack":
+                    print(data[2].decode())
                 if SEQ == 1:
                     SEQ = 0
                 else:
@@ -61,5 +72,6 @@ def sendack(ack):
     client.sendto(pacote_serializado, server_adress)
     return
 
-threading.Thread(target = Send).start()
-threading.Thread(target = receive).start()
+thread1 = threading.Thread(target = Receive)
+thread1.start()
+Send()
