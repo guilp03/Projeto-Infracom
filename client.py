@@ -1,7 +1,6 @@
 from socket import *
 from pickle import *
 import threading
-import time
 
 SEQ = 0
 ACK = 1
