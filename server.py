@@ -86,7 +86,7 @@ while True:
                 
     #COMANDO 2
     elif mensagem == comando2 and sender in lista_enderecos:
-        resposta = (f"{msg_dividida[4]} saiu da sala")
+        resposta = (f"{lista_nomes[index_usuario]} saiu da sala")
         ################################################################
         for i in range (len(lista_nomes)):
             if lista_enderecos[i] != sender:
