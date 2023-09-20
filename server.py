@@ -37,18 +37,23 @@ def retransmitir_pacote(seq, msg, destino):
     return
 
 while True:
-    print(lista_nomes)    
-    data, sender = serverSocket.recvfrom(1024)
+    print(lista_nomes)
+    while True:
+        try:
+            serverSocket.settimeout(1)
+            data, sender = serverSocket.recvfrom(1024)
+            break
+        except timeout:
+            continue
     dado_desempacotado = loads(data)
     mensagem = dado_desempacotado[2].decode()
     if sender in lista_enderecos:
         index_usuario = lista_enderecos.index(sender)
     #REPETICAO DESNECESSARIA
-    if sender in lista_enderecos and mensagem[1] == ultimos_ack[index_usuario]:
+    if sender in lista_enderecos and dado_desempacotado[1] != ultimos_ack[index_usuario]:
         pacote_resposta = (1,ultimos_ack[index_usuario], "ack".encode())
         pacote_resposta_serializado = dumps(pacote_resposta)
         serverSocket.sendto(pacote_resposta_serializado, lista_enderecos[i])
-        ultimos_ack[i] = Atualizar_Operador(ultimos_ack[i])
     #COMANDO 1  
     elif comando1 in mensagem and sender not in lista_enderecos:
         lista_enderecos.append(sender)
@@ -63,13 +68,14 @@ while True:
             if lista_enderecos[i] != sender:
                 pacote_resposta = (0,ultimo_seq[i], resposta.encode())
                 pacote_resposta_serializado = dumps(pacote_resposta)
-                serverSocket.sendto(pacote_resposta_serializado, lista_enderecos[i])
                 while True:
+                    serverSocket.sendto(pacote_resposta_serializado, lista_enderecos[i])
                     try:
-                        serverSocket.settimeout(1.0)
+                        serverSocket.settimeout(5.0)
                         ack, emissor = serverSocket.recvfrom(1024)
-                        if emissor == lista_enderecos[i] and ack[1] == ultimo_seq[i]:
-                            ultimo_seq = Atualizar_Operador(ultimo_seq[i])
+                        ack_unpacket = loads(ack)
+                        if emissor == lista_enderecos[i] and ack_unpacket[1] == ultimo_seq[i]:
+                            ultimo_seq[i] = Atualizar_Operador(ultimo_seq[i])
                             break
                     except timeout:
                         continue
@@ -87,13 +93,14 @@ while True:
             if lista_enderecos[i] != sender:
                 pacote_resposta = (0,ultimo_seq[i], resposta.encode())
                 pacote_resposta_serializado = dumps(pacote_resposta)
-                serverSocket.sendto(pacote_resposta_serializado, lista_enderecos[i])
                 while True:
+                    serverSocket.sendto(pacote_resposta_serializado, lista_enderecos[i])
                     try:
-                        serverSocket.settimeout(1.0)
+                        serverSocket.settimeout(5.0)
                         ack, emissor = serverSocket.recvfrom(1024)
-                        if emissor == lista_enderecos[i] and ack[1] == ultimo_seq[i]:
-                            ultimo_seq = Atualizar_Operador(ultimo_seq[i])
+                        ack_unpacket = loads(ack)
+                        if emissor == lista_enderecos[i] and ack_unpacket[1] == ultimo_seq[i]:
+                            ultimo_seq[i] = Atualizar_Operador(ultimo_seq[i])
                             break
                     except timeout:
                         continue
@@ -115,13 +122,14 @@ while True:
         ################################################################################################
         pacote_resposta = (0,ultimo_seq[index_usuario], resposta.encode())
         pacote_resposta_serializado = dumps(pacote_resposta)
-        serverSocket.sendto(pacote_resposta_serializado, sender)
         while True:
+            serverSocket.sendto(pacote_resposta_serializado, sender)
             try:
-                serverSocket.settimeout(1.0)
+                serverSocket.settimeout(5.0)
                 ack, emissor = serverSocket.recvfrom(1024)
-                if emissor == sender and ack[1] == ultimo_seq[index_usuario]:
-                    ultimo_seq = Atualizar_Operador(ultimo_seq[i])
+                ack_unpacket = loads(ack)
+                if emissor == sender and ack_unpacket[1] == ultimo_seq[index_usuario]:
+                    ultimo_seq[i] = Atualizar_Operador(ultimo_seq[i])
                     break
             except timeout:
                 continue
@@ -137,13 +145,14 @@ while True:
             if lista_enderecos[i] != sender:
                 pacote_resposta = (0,ultimo_seq[i], resposta.encode())
                 pacote_resposta_serializado = dumps(pacote_resposta)
-                serverSocket.sendto(pacote_resposta_serializado, lista_enderecos[i])
                 while True:
+                    serverSocket.sendto(pacote_resposta_serializado, lista_enderecos[i])
                     try:
-                        serverSocket.settimeout(1.0)
+                        serverSocket.settimeout(5.0)
                         ack, emissor = serverSocket.recvfrom(1024)
-                        if emissor == lista_enderecos[i] and ack[1] == ultimo_seq[i]:
-                            ultimo_seq = Atualizar_Operador(ultimo_seq[i])
+                        ack_unpacket = loads(ack)
+                        if emissor == lista_enderecos[i] and ack_unpacket[1] == ultimo_seq[i]:
+                            ultimo_seq[i] = Atualizar_Operador(ultimo_seq[i])
                             break
                     except timeout:
                         continue

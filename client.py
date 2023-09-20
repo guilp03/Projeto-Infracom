@@ -30,7 +30,7 @@ def Send():
         pacote_serializado = dumps(pacote)
         client.sendto(pacote_serializado, server_adress)
         semaforo.release()
-        temporizador = threading.Timer(1.0, retransmitir_pacote, args= (SEQ, msg))
+        temporizador = threading.Timer(5.0, retransmitir_pacote, args= (SEQ, msg))
         temporizador.start()  
 def Receive():
     global server_adress
