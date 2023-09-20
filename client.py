@@ -1,17 +1,18 @@
 from socket import *
 from pickle import *
 import threading
+import time
+
+semaforo = threading.Semaphore(0)
 
 SEQ = 0
 ACK = 1
-recebido = False
 def retransmitir_pacote(seq, msg):
     pacote = (0,seq,msg.encode())
     pacote_serializado = dumps(pacote)
     client.sendto(pacote_serializado, server_adress)
 
     return
-temporizador = threading.Timer(1.0, retransmitir_pacote, args= SEQ)
 
 server_adress = ("127.0.0.1", 4433)
 client = socket(AF_INET, SOCK_DGRAM)
@@ -28,27 +29,24 @@ def Send():
         pacote = (0,SEQ, msg.encode())
         pacote_serializado = dumps(pacote)
         client.sendto(pacote_serializado, server_adress)
+        semaforo.release()
         temporizador = threading.Timer(1.0, retransmitir_pacote, args= (SEQ, msg))
-        temporizador.start()
-        while recebido == False:
-            continue    
-        return
+        temporizador.start()  
 def Receive():
     global server_adress
     global SEQ
     global ACK
     global temporizador
     global recebido
+    global sent
     
+    semaforo.acquire()
     while True:
-        client.settimeout(1.0)
         mensagem, sender = client.recvfrom(1024)
-        print("recebido")
         data = loads(mensagem)
         if data[0] == 1:
             if data[1] == SEQ:
                 temporizador.cancel()
-                recebido = True
                 if data[2].decode() != "ack":
                     print(data[2].decode())
                 if SEQ == 1:
@@ -67,11 +65,13 @@ def Receive():
                 sendack(data[1])
         
 def sendack(ack):
+    global server_adress
     pacote = (1,ack,"recebido".encode() )
     pacote_serializado = dumps(pacote)
     client.sendto(pacote_serializado, server_adress)
     return
 
-thread1 = threading.Thread(target = Receive)
+thread1 = threading.Thread(target = Send)
 thread1.start()
-Send()
+Receive()
+#caso de erro: o 2 clientes que se apresentam

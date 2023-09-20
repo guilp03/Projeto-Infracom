@@ -37,8 +37,8 @@ def retransmitir_pacote(seq, msg, destino):
     return
 
 while True:
+    print(lista_nomes)    
     data, sender = serverSocket.recvfrom(1024)
-    print(sender)
     dado_desempacotado = loads(data)
     mensagem = dado_desempacotado[2].decode()
     if sender in lista_enderecos:
@@ -109,9 +109,11 @@ while True:
         
     #COMANDO 3
     elif mensagem == comando3 and sender in lista_enderecos:
-        resposta = lista_nomes.copy()
+        resposta = ""
+        for nome, endereco in zip(lista_nomes, lista_enderecos):
+            resposta = resposta + nome + "/" + str(endereco[0]) + ":" + str(endereco[1]) + " "
         ################################################################################################
-        pacote_resposta = (0,ultimo_seq[index_usuario], resposta)
+        pacote_resposta = (0,ultimo_seq[index_usuario], resposta.encode())
         pacote_resposta_serializado = dumps(pacote_resposta)
         serverSocket.sendto(pacote_resposta_serializado, sender)
         while True:
@@ -126,6 +128,7 @@ while True:
             
     #MENSAGEM QUALQUER
     elif sender in lista_enderecos:
+        print("entrou")
         horario = datetime.now()
         horario_formatado = Formatar_Horario(str(horario))
         ################################################################################################
@@ -151,8 +154,8 @@ while True:
                 ultimos_ack[i] = Atualizar_Operador(ultimos_ack[i])
     
     else:
-        print("enviando")
         resposta = "Conecte-se ao chat usando o comando (hi, meu nome eh <nome_do_usuario>)"
-        pacote_resposta = (0, dado_desempacotado[1], resposta.encode())
+        pacote_resposta = (1, dado_desempacotado[1], resposta.encode())
         pacote_resposta_serializado = dumps(pacote_resposta)
+        print(sender)
         serverSocket.sendto(pacote_resposta_serializado, sender)
