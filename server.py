@@ -10,10 +10,9 @@ lista_nomes = []
 lista_enderecos = []
 ultimos_ack = []
 ultimo_seq = []
-serverSocket = socket(AF_INET, SOCK_DGRAM)
-serverSocket.bind(("127.0.0.1", 4433))
-print ("Servidor Pronto")
-print("--------------------------------Iniciar Chat----------------------------------------")
+
+# Funcoes auxiliares
+
 def Atualizar_Operador(numero_atual):
     if numero_atual == 0:
         return 1
@@ -26,7 +25,7 @@ def Formatar_Horario(horario):
     hora = separacao[1]
     data_separada = data.split("-")
     hora_separada = hora.split(".")
-    data_fomatada = f"{data_separada[2]}/{data_separada[1]}/{data_separada[0]}"
+    data_fomatada = f"{data_separada[2]}/{data_separada[1]}/{data_separada[0]}" # converte a data para o formato Dia/Mes/Ano
     hora_data = f"{hora_separada[0]} {data_fomatada}"
     return hora_data
 
@@ -36,6 +35,14 @@ def retransmitir_pacote(seq, msg, destino):
     serverSocket.sendto(pacote_serializado, destino)
     return
 
+# Definicao do Socket do server
+serverSocket = socket(AF_INET, SOCK_DGRAM)
+serverSocket.bind(("127.0.0.1", 4433))
+# Print inicial para mostrar que o server esta disponivel e o chat foi iniciado
+print ("Servidor Pronto")
+print("--------------------------------Iniciar Chat--------------------------------")
+
+# Loop infinito que garante que o server esteja sempre em execução
 while True:
     while True:
         try:
@@ -53,7 +60,8 @@ while True:
         pacote_resposta = (1,ultimos_ack[index_usuario], "ack".encode())
         pacote_resposta_serializado = dumps(pacote_resposta)
         serverSocket.sendto(pacote_resposta_serializado, lista_enderecos[i])
-    #COMANDO 1  
+    
+    #COMANDO 1 = 'hi, meu nome eh' 
     elif comando1 in mensagem and sender not in lista_enderecos:
         lista_enderecos.append(sender)
         msg_dividida = mensagem.split(" ")
@@ -84,7 +92,7 @@ while True:
                 serverSocket.sendto(pacote_resposta_serializado, lista_enderecos[i])
                 ultimos_ack[i] = Atualizar_Operador(ultimos_ack[i])
                 
-    #COMANDO 2
+    #COMANDO 2 = 'bye'
     elif mensagem == comando2 and sender in lista_enderecos:
         resposta = (f"{lista_nomes[index_usuario]} saiu da sala")
         ################################################################
@@ -113,7 +121,7 @@ while True:
         ultimos_ack.pop(index_usuario)
         ultimo_seq.pop(index_usuario)
         
-    #COMANDO 3
+    #COMANDO 3 = 'list'
     elif mensagem == comando3 and sender in lista_enderecos:
         resposta = ""
         for nome, endereco in zip(lista_nomes, lista_enderecos):
