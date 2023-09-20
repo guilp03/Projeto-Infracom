@@ -1,21 +1,19 @@
 from socket import *
 from pickle import *
 import threading
-import time
-
-semaforo = threading.Semaphore(0)
 
 SEQ = 0
 ACK = 1
+server_adress = ("127.0.0.1", 4433)
+
+# Funcoes auxiliares
+
 def retransmitir_pacote(seq, msg):
     pacote = (0,seq,msg.encode())
     pacote_serializado = dumps(pacote)
     client.sendto(pacote_serializado, server_adress)
 
     return
-
-server_adress = ("127.0.0.1", 4433)
-client = socket(AF_INET, SOCK_DGRAM)
 
 def Send():
     global server_adress
@@ -32,6 +30,7 @@ def Send():
         semaforo.release()
         temporizador = threading.Timer(5.0, retransmitir_pacote, args= (SEQ, msg))
         temporizador.start()  
+
 def Receive():
     global server_adress
     global SEQ
@@ -71,7 +70,11 @@ def sendack(ack):
     client.sendto(pacote_serializado, server_adress)
     return
 
+# Definicao do Socket do client
+client = socket(AF_INET, SOCK_DGRAM)
+
+# Threads
+semaforo = threading.Semaphore(0)
 thread1 = threading.Thread(target = Send)
 thread1.start()
 Receive()
-#caso de erro: o 2 clientes que se apresentam
