@@ -37,7 +37,6 @@ def retransmitir_pacote(seq, msg, destino):
     return
 
 while True:
-    print(lista_nomes)
     while True:
         try:
             serverSocket.settimeout(1)
@@ -129,14 +128,13 @@ while True:
                 ack, emissor = serverSocket.recvfrom(1024)
                 ack_unpacket = loads(ack)
                 if emissor == sender and ack_unpacket[1] == ultimo_seq[index_usuario]:
-                    ultimo_seq[i] = Atualizar_Operador(ultimo_seq[i])
+                    ultimo_seq[index_usuario] = Atualizar_Operador(ultimo_seq[index_usuario])
                     break
             except timeout:
                 continue
             
     #MENSAGEM QUALQUER
     elif sender in lista_enderecos:
-        print("entrou")
         horario = datetime.now()
         horario_formatado = Formatar_Horario(str(horario))
         ################################################################################################
@@ -166,5 +164,4 @@ while True:
         resposta = "Conecte-se ao chat usando o comando (hi, meu nome eh <nome_do_usuario>)"
         pacote_resposta = (1, dado_desempacotado[1], resposta.encode())
         pacote_resposta_serializado = dumps(pacote_resposta)
-        print(sender)
         serverSocket.sendto(pacote_resposta_serializado, sender)
